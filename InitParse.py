@@ -1,12 +1,15 @@
-# dParsers = {"//ох": [ParseRef, "template/ox.adoc"]}
 import datetime
 import logging
+from staticData import base_dir, dTepmlates, cons_output
 
+dTepmlates = {"//ох": "template/ox.adoc"}
 logger = logging.getLogger(__name__)
 
 
-class BaseParse:
+class InitParse:
     def __init__(self):
+        self.reader = ""
+        self.writer = ""
         self.line_number = 0
         self.data = {}
         self.sdata = []
@@ -15,7 +18,7 @@ class BaseParse:
         line_data = line_data.rstrip()
         self.line_number += 1
         if 1 == self.line_number:
-            self.data["template_path"] = line_data
+            self.data["template_name"] = line_data
             return
         if 2 == self.line_number:
             self.data["fio"] = line_data
@@ -29,12 +32,21 @@ class BaseParse:
         if len(d) == 2:
             self.data[d[0]] = d[1]
 
+    def create_filename(self):
+        self.reader = base_dir+dTepmlates[self.data["template_name"]]
+        time_str = datetime.date.today().strftime("%Y%m%d")
+        name_str = self.data["fio"].split()[0]
+        self.writer = base_dir+cons_output+time_str+name_str
+
+
     def __del__(self):
         logger.info("Replacements: ")
         logger.info(self.data)
         logger.info(self.data["fio"])
         logger.info("Static data: ")
         logger.info(self.sdata)
+        logger.info("Reader: " + self.reader)
+        logger.info("Writer: " + self.writer)
 
 
 
